@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinh Thể NaCl - Scientific Presentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0b0f19;
+            --accent-cyan: #00f3ff;
+            --accent-purple: #bc13fe;
+            --accent-green: #0aff60;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- BACKGROUND ANIMATION --- */
+        .bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(188, 19, 254, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 243, 255, 0.05), transparent 25%);
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0.2; }
+        }
+
+        /* --- SLIDE CONTAINER --- */
+        .slides-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        section {
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 80px;
+            position: relative;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+            opacity: 0.5;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 243, 255, 0.1);
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        h2 i { font-size: 0.8em; opacity: 0.8; }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--accent-purple);
+            margin-bottom: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        strong { color: #fff; font-weight: 600; }
+        
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(0,0,0,0.3);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: var(--accent-green);
+            font-size: 0.9em;
+        }
+
+        /* --- GRID LAYOUTS --- */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            h1 { font-size: 2.5rem; }
+        }
+
+        /* --- ANIMATIONS & VISUALS --- */
+        
+        /* 1. Atom Animation */
+        .atom-visual {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nucleus {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 30px var(--accent-cyan);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .orbit {
+            position: absolute;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: spin 4s linear infinite;
+        }
+
+        .orbit:nth-child(1) { width: 100px; height: 100px; animation-duration: 3s; border-color: rgba(188, 19, 254, 0.3); }
+        .orbit:nth-child(2) { width: 180px; height: 180px; animation-duration: 5s; border-color: rgba(0, 243, 255, 0.3); animation-direction: reverse; }
+        .orbit:nth-child(3) { width: 260px; height: 260px; animation-duration: 7s; border-color: rgba(10, 255, 96, 0.3); }
+
+        .electron {
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: -5px;
+            box-shadow: 0 0 10px #fff;
+            transform: translateY(-50%);
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 2. Reaction Animation */
+        .reaction-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 30px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+        }
+
+        .element-box {
+            text-align: center;
+            position: relative;
+        }
+
+        .element-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border: 2px solid rgba(255,255,255,0.1);
+            transition: all 0.5s;
+        }
+
+        .na-circle { background: rgba(188, 19, 254, 0.2); border-color: var(--accent-purple); color: var(--accent-purple); }
+        .cl-circle { background: rgba(10, 255, 96, 0.2); border-color: var(--accent-green); color: var(--accent-green); }
+
+        .electron-transfer {
+            width: 12px;
+            height: 12px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            position: absolute;
+            top: 34px;
+            left: 50%;
+            box-shadow: 0 0 15px #ffeb3b;
+            animation: transfer 3s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        @keyframes transfer {
+            0% { transform: translateX(0); opacity: 1; }
+            40% { transform: translateX(60px) scale(1.5); }
+            80% { transform: translateX(120px); opacity: 1; }
+            81% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        /* 3. Cube Lattice Animation */
+        .lattice-container {
+            perspective: 1000px;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+        }
+
+        .lattice {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 15s infinite linear;
+        }
+
+        .ion {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            opacity: 0.9;
+        }
+
+        .ion-na { background: var(--accent-purple); box-shadow: 0 0 15px var(--accent-purple); width: 30px; height: 30px; }
+        .ion-cl { background: var(--accent-green); box-shadow: 0 0 15px var(--accent-green); }
+
+        @keyframes rotateCube {
+            from { transform: rotateX(-20deg) rotateY(0deg); }
+            to { transform: rotateX(-20deg) rotateY(360deg); }
+        }
+
+        /* Utilities */
+        .highlight-box {
+            padding: 20px;
+            border-left: 4px solid var(--accent-cyan);
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.05), transparent);
+            margin: 10px 0;
+        }
+
+        .app-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+        
+        .app-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .app-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: rgba(0,0,0,0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Background Particles -->
+    <div class="bg-canvas">
+        <div class="particle" style="top: 10%; left: 20%; width: 4px; height: 4px; background: var(--accent-cyan); animation-duration: 25s;"></div>
+        <div class="particle" style="top: 60%; left: 80%; width: 6px; height: 6px; background: var(--accent-purple); animation-duration: 30s; animation-delay: -5s;"></div>
+        <div class="particle" style="top: 40%; left: 40%; width: 3px; height: 3px; background: var(--accent-green); animation-duration: 20s; animation-delay: -10s;"></div>
+        <div class="particle" style="top: 80%; left: 10%; width: 5px; height: 5px; background: #fff; animation-duration: 35s;"></div>
+    </div>
+
+    <div class="slides-wrapper">
+        
+        <!-- SECTION 1: INTRO & DEFINITION -->
+        <section id="intro">
+            <div class="grid-2">
+                <div>
+                    <div style="font-family: 'JetBrains Mono'; color: var(--accent-cyan); margin-bottom: 10px;">BS.CKI. Chemistry Lab</div>
+                    <h1>TINH THỂ NaCl</h1>
+                    <p style="font-size: 1.5rem; color: #fff;">(Natri Clorua)</p>
+                    <div class="highlight-box">
+                        <p><strong>Định nghĩa:</strong> Là dạng rắn kết tinh có cấu trúc <span class="code-block">hình lập phương</span> đặc trưng.</p>
+                        <p style="margin-bottom: 0;"><strong>Đặc điểm:</strong> Các ion sắp xếp đối xứng, tạo nên khối bền vững và <span style="color: var(--accent-cyan)">trong suốt</span>.</p>
+                    </div>
+                </div>
+                <div class="atom-visual">
+                    <div class="nucleus">NaCl</div>
+                    <div class="orbit"><div class="electron"></div></div>
+                    <div class="orbit"><div class="electron"></div></div>
+                    <div class="orbit"><div class="electron"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: FORMATION -->
+        <section id="formation">
+            <div class="card">
+                <h2><i class="fa-solid fa-flask"></i> 2. Sự Hình Thành</h2>
+                <div class="grid-2">
+                    <div>
+                        <p>Tinh thể được tạo thành từ tương tác tĩnh điện giữa hai loại ion trái dấu:</p>
+                        <ul style="list-style: none; padding-left: 20px;">
+                            <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                                <span class="na-circle" style="width: 30px; height: 30px; font-size: 12px; margin:0;">Na⁺</span>
+                                <span>Ion Natri (Dương)</span>
+                            </li>
+                            <li style="display: flex; align-items: center; gap: 10px;">
+                                <span class="cl-circle" style="width: 30px; height: 30px; font-size: 12px; margin:0;">Cl⁻</span>
+                                <span>Ion Clorua (Âm)</span>
+                            </li>
+                        </ul>
+                        <br>
+                        <p style="font-size: 0.9em; font-style: italic; color: var(--text-muted);">
+                            "Nguyên tử Natri nhường 1 electron cho nguyên tử Clo. Lực hút tĩnh điện giữ chúng lại với nhau."
+                        </p>
+                    </div>
+                    
+                    <div class="reaction-container">
+                        <div class="element-box">
+                            <div class="electron-transfer"></div>
+                            <div class="element-circle na-circle">Na</div>
+                            <span>Cho 1e</span>
+                        </div>
+                        <i class="fa-solid fa-arrow-right" style="color: #555;"></i>
+                        <div class="element-box">
+                            <div class="element-circle cl-circle">Cl</div>
+                            <span>Nhận 1e</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: BONDING & STRUCTURE -->
+        <section id="bonding">
+            <div class="card">
+                <h2><i class="fa-solid fa-cubes-stacked"></i> 3. Cấu Trúc & Liên Kết</h2>
+                <div class="grid-2">
+                    <div class="lattice-container">
+                        <div class="lattice">
+                            <!-- Simple representation of a lattice unit -->
+                            <!-- Front Face -->
+                            <div class="ion ion-na" style="transform: translateZ(50px) translateY(-50px) translateX(-50px);"></div>
+                            <div class="ion ion-cl" style="transform: translateZ(50px) translateY(-50px) translateX(50px);"></div>
+                            <div class="ion ion-cl" style="transform: translateZ(50px) translateY(50px) translateX(-50px);"></div>
+                            <div class="ion ion-na" style="transform: translateZ(50px) translateY(50px) translateX(50px);"></div>
+                            
+                            <!-- Back Face -->
+                            <div class="ion ion-cl" style="transform: translateZ(-50px) translateY(-50px) translateX(-50px);"></div>
+                            <div class="ion ion-na" style="transform: translateZ(-50px) translateY(-50px) translateX(50px);"></div>
+                            <div class="ion ion-na" style="transform: translateZ(-50px) translateY(50px) translateX(-50px);"></div>
+                            <div class="ion ion-cl" style="transform: translateZ(-50px) translateY(50px) translateX(50px);"></div>
+
+                            <!-- Connecting Lines (Visual only) -->
+                            <div style="position: absolute; width: 100px; height: 100px; border: 1px dashed rgba(255,255,255,0.3); transform: translateZ(50px) translateX(-50px) translateY(-50px);"></div>
+                            <div style="position: absolute; width: 100px; height: 100px; border: 1px dashed rgba(255,255,255,0.3); transform: translateZ(-50px) translateX(-50px) translateY(-50px);"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="highlight-box" style="border-left-color: var(--accent-purple);">
+                            <h3>Liên kết ION</h3>
+                            <p>Mỗi ion <span class="code-block">Na⁺</span> được bao quanh bởi 6 ion <span class="code-block">Cl⁻</span> và ngược lại (Tỉ lệ 6:6).</p>
+                            <p>Tạo thành mạng lưới lập phương khổng lồ lặp lại đều đặn.</p>
+                        </div>
+                        
+                        <div class="grid-3" style="margin-top: 20px;">
+                            <div class="app-item">
+                                <i class="fa-solid fa-fire app-icon" style="color: #ff5252;"></i>
+                                <div>
+                                    <div style="font-size: 0.8em; color: #aaa;">Điểm nóng chảy</div>
+                                    <div style="font-weight: bold;">801°C</div>
+                                </div>
+                            </div>
+                            <div class="app-item">
+                                <i class="fa-solid fa-droplet app-icon" style="color: #40c4ff;"></i>
+                                <div>
+                                    <div style="font-size: 0.8em; color: #aaa;">Độ tan</div>
+                                    <div style="font-weight: bold;">Dễ tan</div>
+                                </div>
+                            </div>
+                             <div class="app-item">
+                                <i class="fa-solid fa-hammer app-icon" style="color: #e0e0e0;"></i>
+                                <div>
+                                    <div style="font-size: 0.8em; color: #aaa;">Cơ tính</div>
+                                    <div style="font-weight: bold;">Cứng, Giòn</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: APPLICATIONS -->
+        <section id="applications">
+            <h2><i class="fa-solid fa-microchip"></i> 4. Ứng Dụng Thực Tiễn</h2>
+            <div class="grid-2">
+                <!-- Life -->
+                <div class="card" style="border-top: 4px solid var(--accent-green);">
+                    <h3><i class="fa-solid fa-leaf"></i> Đời Sống & Y Tế</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="app-item">
+                            <div class="app-icon"><i class="fa-solid fa-utensils"></i></div>
+                            <p style="margin:0">Gia vị & Bảo quản thực phẩm</p>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-icon"><i class="fa-solid fa-heart-pulse" style="color: #ff5252;"></i></div>
+                            <p style="margin:0">Nước muối sinh lý (0.9%)</p>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-icon"><i class="fa-solid fa-tablets"></i></div>
+                            <p style="margin:0">Dược phẩm & Y tế</p>
+                        </div>
+                         <div class="app-item">
+                            <div class="app-icon"><i class="fa-solid fa-lightbulb" style="color: #ffd740;"></i></div>
+                            <p style="margin:0">Đèn đá muối, Gạch muối</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Industry -->
+                <div class="card" style="border-top: 4px solid var(--accent-cyan);">
+                    <h3><i class="fa-solid fa-industry"></i> Công Nghiệp</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="app-item">
+                            <div class="app-icon"><i class="fa-solid fa-bolt" style="color: #ffab00;"></i></div>
+                            <div>
+                                <strong style="display:block; font-size: 0.9em; color: var(--accent-cyan);">Điện phân dung dịch</strong>
+                                <span style="font-size: 0.9em;">Tạo NaOH, Cl₂, H₂</span>
+                            </div>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-icon"><i class="fa-solid fa-vial"></i></div>
+                            <p style="margin:0">Hóa chất cơ bản</p>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-icon"><i class="fa-solid fa-water" style="color: #40c4ff;"></i></div>
+                            <p style="margin:0">Xử lý nước</p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; text-align: center; font-family: 'JetBrains Mono'; color: var(--text-muted); font-size: 0.8rem;">
+                        // NaCl is the foundation of modern chemical industry
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</body>
+</html>
